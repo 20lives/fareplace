@@ -58,7 +58,7 @@ function findDirectFlights(from, to, after, before) {
       return false;
     }
     return true;
-  })
+  });
 }
 
 const uniq = a => [ ...new Set(a) ];
@@ -73,15 +73,15 @@ function findFlights(from, to, after, before, maxLayover, prevList = []) {
   }
 
   const fromAirport = flights.filter(flight => from == flight.from && to !== flight.to
-    && (flight.departure < before && flight.departure > after)
+    && (flight.departure < before && flight.departure > after),
   );
 
   const airports = uniq(fromAirport.map(x => x.to));
 
   airports.forEach(airport => {
-    const fromAirportFlights = fromAirport.filter(f => f.to == airport && !prevList.includes(f.to))
+    const fromAirportFlights = fromAirport.filter(f => f.to == airport && !prevList.includes(f.to));
     fromAirportFlights.forEach(f1 => {
-      const layoverTime = addMinutes(f1.arrival, LAYOVERS_DIFF_IN_MIN)
+      const layoverTime = addMinutes(f1.arrival, LAYOVERS_DIFF_IN_MIN);
       const nList = [ ...prevList, f1.from ];
       const c = findFlights(f1.to, to, f1.arrival, layoverTime, maxLayover - 1, nList);
       results = [ ...results, ...c.map(f2 => ([f1, ...f2]))];
