@@ -1,0 +1,20 @@
+{
+  "name": "fareplace",
+  "version": "1.0.0",
+  "description": "Welcome to FarePlace's backend developer assignment!",
+  "main": "src/index.js",
+  "type": "module",
+    "scripts": {
+    "dev": "nodemon src/index.js",
+    "lint": "eslint src/*"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "date-fns": "^2.28.0",
+    "eslint": "^8.17.0",
+    "koa": "^2.13.4",
+    "koa-bodyparser": "^4.3.0",
+    "nodemon": "^2.0.16"
+  }
+}

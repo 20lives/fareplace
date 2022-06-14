@@ -1,0 +1,157 @@
+openapi: 3.0.0
+info:
+  description: FarePlace airline inventory pricing API
+  version: "1.0.0"
+  title: Simple Inventory API
+  contact:
+    email: jobs@fareplacecom
+paths:
+  /itinerary/priceRoundTrip:
+    get:
+      summary: Searches the inventory for a roundtrip flight, given a route and dates. 
+      operationId: priceRoundTrip
+      description: |
+        Search the inventory for a roundtrip itinerary for this route and selected dates
+      parameters:
+        - in: query
+          name: from
+          description: IATA code of the airport we depart from
+          required: true
+          schema:
+            $ref: '#/components/schemas/AirportCode'
+        - in: query
+          name: to
+          description: IATA code of the airport we fly to
+          schema:
+            $ref: '#/components/schemas/AirportCode'
+        - in: query
+          name: date
+          description: maximum number of records to return
+          schema:
+            $ref: '#/components/schemas/Date'
+        - in: query
+          name: returnDate
+          description: maximum number of records to return
+          schema:
+            $ref: '#/components/schemas/Date'
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Itinerary'
+  /itinerary/priceWithConnections:
+    get:
+      summary: Searches inventory for an itinerary between two airports, which may include a connecting flight
+      operationId: priceWithConnections
+      description: |
+        Searches inventory for an itinerary between two airports, which may include a connecting flight
+        
+        Connecting flight is a situation where the passenger can reach the destination indirectly by changing flights at the connecting airport
+        
+        For example, if a passenger wishes to fly from TLV to MEX, he may fly from TLV to MAD, and from there take a flight from MAD to MEX.
+        
+        For our purposes an itinerary may contain up to 2 connecting flights. The waiting time between flights should be under 6 hours
+      parameters:
+        - in: query
+          name: from
+          description: IATA code of the airport we depart from
+          required: true
+          schema:
+            $ref: '#/components/schemas/AirportCode'
+        - in: query
+          name: to
+          description: IATA code of the airport we fly to
+          schema:
+            $ref: '#/components/schemas/AirportCode'
+        - in: query
+          name: date
+          description: maximum number of records to return
+          schema:
+            $ref: '#/components/schemas/Date'
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Itinerary'
+  /itinerary/priceAllRoundTrip:
+    get:
+      summary: Searches the inventory for all roundtrip itineraries, given a route. 
+      operationId: priceAllRoundTrip
+      description: |
+        Searches the inventory for all roundtrip itineraries, given a route.
+      parameters:
+        - in: query
+          name: from
+          description: IATA code of the airport we depart from
+          required: true
+          schema:
+            $ref: '#/components/schemas/AirportCode'
+        - in: query
+          name: to
+          description: IATA code of the airport we fly to
+          schema:
+            $ref: '#/components/schemas/AirportCode'
+      responses:
+        '200':
+          description: |
+            All possible round itineraries.
+            
+            The results should be batched as streamed using JSON Lines protocol:
+            https://jsonlines.org/
+          content:
+            application/json-seq:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Itinerary'
+components:
+  schemas:
+    Date:
+      type: string
+      format: 'date'
+    
+    AirportCode:
+      type: string
+      minLength: 3
+      maxLength: 3
+    Itinerary:
+      type: object
+      properties:
+        flights:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Flight'
+        totalPrice:
+          type: number
+    Flight:
+      type: object
+      properties:
+        flightNumber:
+          type: string
+        date:
+          $ref: '#/components/schemas/Date'
+        from:
+          $ref: '#/components/schemas/AirportCode'
+        to:
+          $ref: '#/components/schemas/AirportCode'
+        price:
+          type: number
+        availableSeats:
+          type: number
+        departureDate:
+          type: string
+        duration:
+          type: integer
+          minimum: 1
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/FarePlace/Airline_Test/1.0.0
